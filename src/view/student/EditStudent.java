@@ -7,14 +7,8 @@
 package view.student;
 
 import controller.student.StudentDetailController;
-import datalayer.student.StudentDA;
-import java.awt.Dimension;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -31,28 +25,9 @@ public class EditStudent extends javax.swing.JInternalFrame {
     StudentDetailController controller;
     /**
      * Creates new form EditStudent
+     * @param controller
      */
-    public EditStudent() {
-        initComponents();
-        imgLbl.setPreferredSize(new Dimension(128, 128));
-        imgLbl.setMaximumSize(new Dimension(128, 128));
-        imgLbl.setMinimumSize(new Dimension(128, 128));
-        controller = new StudentDetailController();
-        try {
-            ComboBoxUtility.setComboItem(idCmbx, "Select studentID from student order by 1");
-            ComboBoxUtility.setComboItem(nameCmbx, "Select concat(firstName,' ',lastName) as name from student");
-            
-            JTextField txt1 = (JTextField) idCmbx.getEditor().getEditorComponent();
-            new ComboBoxUtility().setSearchableCombo(idCmbx, txt1, "No such student");
-            
-            JTextField txt2 = (JTextField) nameCmbx.getEditor().getEditorComponent();
-            new ComboBoxUtility().setSearchableCombo(nameCmbx, txt2, "No such student");
-        } catch (SQLException | ClassNotFoundException ex) {
-            JOptionPane.showMessageDialog(this, "Database Error!");            
-        }
-    }
-
-    public EditStudent(StudentDetailController controller) {
+        public EditStudent(StudentDetailController controller) {
         initComponents();
         try {
             ComboBoxUtility.setComboItem(idCmbx, "Select studentID from student order by 1");
@@ -435,7 +410,6 @@ public class EditStudent extends javax.swing.JInternalFrame {
             genderCmbx.setSelectedItem(student.isMale()? "Male" : "Female");
             gurdNameTxt.setText(student.getGuardianName());
             guardPhnTxt.setText(student.getGuardianNumber());
-            imgLbl.setIcon(student.getImage());
             nameCmbx.setSelectedItem(student.getFirstName() + " " + student.getLastName());
         }
     }//GEN-LAST:event_idCmbxActionPerformed
@@ -456,7 +430,6 @@ public class EditStudent extends javax.swing.JInternalFrame {
             phoneTxt.setText(student.getMobileNumber());
             genderCmbx.setSelectedItem(student.isMale()? "Male" : "Female");
             gurdNameTxt.setText(student.getGuardianName());
-            imgLbl.setIcon(student.getImage());
             guardPhnTxt.setText(student.getGuardianNumber());
             idCmbx.setSelectedItem(student.getStudentID());
         }

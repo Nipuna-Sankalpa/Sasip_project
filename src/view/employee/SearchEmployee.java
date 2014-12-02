@@ -6,7 +6,6 @@
 package view.employee;
 
 import controller.employee.EmployeeController;
-import java.awt.Dimension;
 import java.sql.SQLException;
 import javax.swing.ImageIcon;
 import javax.swing.JTextField;
@@ -17,17 +16,18 @@ import utilities.ComboBoxUtility;
  *
  * @author Mampitiya
  */
-public class SearchEmployee extends javax.swing.JInternalFrame {//this interface is used to search an emplloyee
+public class SearchEmployee extends javax.swing.JInternalFrame {
+
     private EmployeeController empController;
+
     /**
      * Creates new form SearchEmployeeForm
+     *
+     * @param employeeController
      */
-    public SearchEmployee() {
+    public SearchEmployee(EmployeeController employeeController) {
         initComponents();
-        imageLbl.setPreferredSize(new Dimension(128, 128));
-        imageLbl.setMaximumSize(new Dimension(128, 128));
-        imageLbl.setMinimumSize(new Dimension(128, 128));
-        empController = new EmployeeController();
+        empController = employeeController;
         try {
             ComboBoxUtility.setComboItem(idCmbx, "Select employeeId from employee order by 1");
             JTextField textField = (JTextField) idCmbx.getEditor().getEditorComponent();
@@ -110,9 +110,9 @@ public class SearchEmployee extends javax.swing.JInternalFrame {//this interface
 
         idCmbx.setEditable(true);
         idCmbx.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "     " }));
-        idCmbx.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                idCmbxItemStateChanged(evt);
+        idCmbx.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                idCmbxActionPerformed(evt);
             }
         });
 
@@ -242,25 +242,6 @@ public class SearchEmployee extends javax.swing.JInternalFrame {//this interface
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void idCmbxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_idCmbxItemStateChanged
-        String id = "";
-        if (idCmbx.getSelectedItem() != null) {
-            id = idCmbx.getSelectedItem().toString();
-        }
-        if (!id.equals("No such employee..")) {
-            try {
-                Employee employee = empController.searchEmployeeByID(id);
-                nameCmbx.setSelectedItem(employee.getFirstName() + " " + employee.getLastName());
-                txtAddress.setText(employee.getAddress());
-                txtMobile.setText(employee.getMobile());
-                accessLvlTxt.setText(employee.getAccessLevel() + "");
-                designationTxt.setText(employee.getDesignation());
-                imageLbl.setIcon(employee.getImage());
-            } catch (SQLException | ClassNotFoundException | NullPointerException ex) {
-            }
-        }
-    }//GEN-LAST:event_idCmbxItemStateChanged
-
     private void clearBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearBtnActionPerformed
         idCmbx.setSelectedIndex(0);
         txtAddress.setText("");
@@ -273,7 +254,7 @@ public class SearchEmployee extends javax.swing.JInternalFrame {//this interface
 
     private void nameCmbxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nameCmbxActionPerformed
         String name = "";
-        if (nameCmbx.getSelectedItem() != null && nameCmbx.getSelectedIndex() != 0) {            
+        if (nameCmbx.getSelectedItem() != null && nameCmbx.getSelectedIndex() != 0) {
             name = nameCmbx.getSelectedItem().toString();
             try {
                 Employee employee = empController.searchEmployeeByName(name);
@@ -282,12 +263,33 @@ public class SearchEmployee extends javax.swing.JInternalFrame {//this interface
                 accessLvlTxt.setText(employee.getAccessLevel() + "");
                 designationTxt.setText(employee.getDesignation());
                 imageLbl.setIcon(employee.getImage());
-                imageLbl.setIcon(employee.getImage());
                 idCmbx.setSelectedItem(employee.getEmployeeID());
             } catch (ClassNotFoundException | SQLException | NullPointerException ex) {
             }
         }
     }//GEN-LAST:event_nameCmbxActionPerformed
+
+    private void idCmbxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_idCmbxActionPerformed
+        String id = null;
+        if (idCmbx.getSelectedItem() != null) {
+            id = idCmbx.getSelectedItem().toString();
+            System.out.println(id);
+        }
+        if (id != null && !id.equals("No such employee..")) {
+            try {
+                Employee employee = empController.searchEmployeeByID(id);
+                if (employee != null) {
+                    nameCmbx.setSelectedItem(employee.getFirstName() + " " + employee.getLastName());
+                    txtAddress.setText(employee.getAddress());
+                    txtMobile.setText(employee.getMobile());
+                    accessLvlTxt.setText(employee.getAccessLevel() + "");
+                    designationTxt.setText(employee.getDesignation());
+                    imageLbl.setIcon(employee.getImage());
+                }
+            } catch (SQLException | ClassNotFoundException | NullPointerException ex) {
+            }
+        }
+    }//GEN-LAST:event_idCmbxActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

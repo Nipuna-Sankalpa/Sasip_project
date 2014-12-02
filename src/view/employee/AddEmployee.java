@@ -6,7 +6,6 @@
 package view.employee;
 
 import controller.employee.EmployeeController;
-import java.awt.Dimension;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.sql.SQLException;
@@ -14,27 +13,23 @@ import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import model.employee.Employee;
-import utilities.DBConnection;
-import utilities.DBImageHandler;
 
 /**
  *
  * @author Mampitiya
  */
-public class AddEmployee extends javax.swing.JInternalFrame {//this is the interface for adding a new employee
+public class AddEmployee extends javax.swing.JInternalFrame {
 
     private String imagePath;
     private EmployeeController empController;
 
     /**
      * Creates new form AddEmployee
+     * @param employeeController
      */
-    public AddEmployee() {
+    public AddEmployee(EmployeeController employeeController) {
         initComponents();
-        imageLbl.setPreferredSize(new Dimension(128, 128));
-        imageLbl.setMaximumSize(new Dimension(128, 128));
-        imageLbl.setMinimumSize(new Dimension(128, 128));
-        empController = new EmployeeController();
+        empController = employeeController;
         try {
             String id = empController.updateId();
             txtID.setText(id);
@@ -319,8 +314,7 @@ public class AddEmployee extends javax.swing.JInternalFrame {//this is the inter
         Employee employee = new Employee(accessLevel, address, designation, id, firstName, lastName, mobile, imagePath);
         try {
             int res = empController.addEmployee(employee);
-            int res1=DBImageHandler.updateImage(DBConnection.getConnection(), imagePath, "employee", employee.getEmployeeID());
-            if (res == 1 && res1==1) {
+            if (res == 1) {
                 JOptionPane.showMessageDialog(this, "Successfully Added!");
                 clearBtnActionPerformed(evt);
                 btnSubmit.setEnabled(false);

@@ -14,7 +14,6 @@ import java.math.BigDecimal;
  */
 public class RoundUp {
     public static Float precision(int decimalPlace, Float d) {
-
     BigDecimal bd = new BigDecimal(Float.toString(d));
     bd = bd.setScale(decimalPlace, BigDecimal.ROUND_UP);
     return bd.floatValue();

@@ -15,39 +15,38 @@ import model.employee.Employee;
  *
  * @author Mampitiya
  */
-public class EmployeeController { //act as the controller that handles messages from the view layer to data access layer
-                                   //and vice versa.
+public class EmployeeController {
     private final EmployeeDA employeeDA;
 
     public EmployeeController() {
         employeeDA = new EmployeeDA();
     }
     
-    public int addEmployee(Employee emp) throws SQLException, ClassNotFoundException, FileNotFoundException {//add Employee
+    public int addEmployee(Employee emp) throws SQLException, ClassNotFoundException, FileNotFoundException {
         return employeeDA.addEmployee(emp);
     }
     
-    public int updateEmployee(Employee emp) throws ClassNotFoundException, SQLException, FileNotFoundException {//update Employee
+    public int updateEmployee(Employee emp) throws ClassNotFoundException, SQLException, FileNotFoundException {
         return employeeDA.updateEmployee(emp);
     }
     
-    public int deleteEmployee(String employeeID) throws ClassNotFoundException, SQLException {//delete Employee
+    public int deleteEmployee(String employeeID) throws ClassNotFoundException, SQLException {
         return employeeDA.deleteEmployee(employeeID);
     }
     
-    public Employee searchEmployeeByName(String name) throws ClassNotFoundException, SQLException {//search Employee By Name
+    public Employee searchEmployeeByName(String name) throws ClassNotFoundException, SQLException {
         return employeeDA.searchEmployeeByName(name);
     }
     
-    public Employee searchEmployeeByID(String employeeID) throws ClassNotFoundException, SQLException {//search Employee By Name
+    public Employee searchEmployeeByID(String employeeID) throws ClassNotFoundException, SQLException {
         return employeeDA.searchEmployeeByID(employeeID);
     }
     
-    public String updateId() throws SQLException, ClassNotFoundException {//return the next new id
+    public String updateId() throws SQLException, ClassNotFoundException {
         return employeeDA.updateId();
     }
     
-    public int updatePassword(String employeeID, String newPw) throws ClassNotFoundException, SQLException{//update Password
+    public int updatePassword(String employeeID, String newPw) throws ClassNotFoundException, SQLException{
         return employeeDA.updatePassword(employeeID, newPw);
     }
 }

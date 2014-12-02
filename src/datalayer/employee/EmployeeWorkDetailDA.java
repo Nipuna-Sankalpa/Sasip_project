@@ -22,11 +22,22 @@ import utilities.DBHandler;
  */
 public class EmployeeWorkDetailDA {
 
-    private static Connection con;
-    private static PreparedStatement statement;
+    private Connection con;
+    private PreparedStatement statement;
 //if the commit failed,throw an enter mark exception
+    private static EmployeeWorkDetailDA empDtl = null;
 
-    public static int addPayments(EmployeeWorkSheet sheet) throws SQLException, ClassNotFoundException, AddRecordException {//add Payments
+    private EmployeeWorkDetailDA() {
+    }
+
+    public static EmployeeWorkDetailDA getInstance() {
+        if (empDtl == null) {
+            empDtl = new EmployeeWorkDetailDA();
+        }
+        return empDtl;
+    }
+
+    public int addPayments(EmployeeWorkSheet sheet) throws SQLException, ClassNotFoundException, AddRecordException {//add Payments
         con = DBConnection.getConnection();//retrieve connection
         int temp = 0;
         String query = "INSERT INTO employee_working_detail (employeeID,time,date,classID) values (?,?,?,?)";
@@ -42,7 +53,7 @@ public class EmployeeWorkDetailDA {
     }
 //assumption-payment ID will not change
 
-    public static int updatePayments(EmployeeWorkSheet sheet) throws ClassNotFoundException, SQLException {
+    public int updatePayments(EmployeeWorkSheet sheet) throws ClassNotFoundException, SQLException {
         con = DBConnection.getConnection();//retrieve connection
         String query = "UPDATE employee_working_detail SET employeeID=?,time=?,date=?,classID=? WHERE entryID=?";
         statement = con.prepareStatement(query);
@@ -56,7 +67,7 @@ public class EmployeeWorkDetailDA {
         return temp;
     }
 
-    public static CachedRowSetImpl searchWorkingDetByID(String employeeID) throws ClassNotFoundException, SQLException {
+    public CachedRowSetImpl searchWorkingDetByID(String employeeID) throws ClassNotFoundException, SQLException {
         con = DBConnection.getConnection();//retrieve connection
         String sql = "Select date, time, classID from employee_working_detail where employeeID = '" + employeeID + "'";
         CachedRowSetImpl rst = new CachedRowSetImpl();
@@ -64,8 +75,8 @@ public class EmployeeWorkDetailDA {
         con.close();//close the connection
         return rst;
     }
-    
-    public static CachedRowSetImpl searchWorkingDetByName(String name) throws ClassNotFoundException, SQLException {
+
+    public CachedRowSetImpl searchWorkingDetByName(String name) throws ClassNotFoundException, SQLException {
         con = DBConnection.getConnection();//retrieve connection
         String sql = "Select concat(firstName, ' ', lastName) as name, employeeID, date, time, classID from employee_working_detail natural join employee having name = '" + name + "'";
         CachedRowSetImpl rst = new CachedRowSetImpl();
@@ -74,7 +85,7 @@ public class EmployeeWorkDetailDA {
         return rst;
     }
 
-    public static CachedRowSetImpl retrieveSingleClassWork(String classID) throws ClassNotFoundException, SQLException {
+    public CachedRowSetImpl retrieveSingleClassWork(String classID) throws ClassNotFoundException, SQLException {
         CachedRowSetImpl rs = null;
         con = DBConnection.getConnection();//retrieve connection
         String query = "SELECT * FROM examfees WHERE classID='" + classID + "'";
@@ -84,7 +95,7 @@ public class EmployeeWorkDetailDA {
         return rs;
     }
 
-    public static ResultSet retrieveWorkByDay(Date date) throws ClassNotFoundException, SQLException {
+    public ResultSet retrieveWorkByDay(Date date) throws ClassNotFoundException, SQLException {
         ResultSet rs = null;
         con = DBConnection.getConnection();//retrieve connection
         String query = "SELECT * FROM employee_working_detail WHERE date='" + date + "'";
@@ -92,7 +103,7 @@ public class EmployeeWorkDetailDA {
         return rs;
     }
 
-    public static ResultSet DeleteWorkByDay(Date date) throws ClassNotFoundException, SQLException {
+    public ResultSet DeleteWorkByDay(Date date) throws ClassNotFoundException, SQLException {
         ResultSet rs = null;
         con = DBConnection.getConnection();//retrieve connection
         String query = "DELETE FROM employee_working_detail WHERE date='" + date + "'";
@@ -100,7 +111,7 @@ public class EmployeeWorkDetailDA {
         return rs;
     }
 
-    public static ResultSet retrieveTable() throws ClassNotFoundException, SQLException {
+    public ResultSet retrieveTable() throws ClassNotFoundException, SQLException {
         ResultSet rs = null;
         con = DBConnection.getConnection();//retrieve connection
         String query = "SELECT * FROM employee_working_detail";
@@ -108,7 +119,7 @@ public class EmployeeWorkDetailDA {
         return rs;
     }
 
-    public static int deleteSingleEmployeeWork(String employeeID) throws ClassNotFoundException, SQLException {
+    public int deleteSingleEmployeeWork(String employeeID) throws ClassNotFoundException, SQLException {
 
         con = DBConnection.getConnection();//retrieve connection
         String query = "DELETE FROM employee_working_detail WHERE employeeID='" + employeeID + "'";
@@ -117,7 +128,7 @@ public class EmployeeWorkDetailDA {
         return temp;
     }
 
-    public static int deleteSingleClassWork(String classID) throws ClassNotFoundException, SQLException {
+    public int deleteSingleClassWork(String classID) throws ClassNotFoundException, SQLException {
 
         con = DBConnection.getConnection();//retrieve connection
         String query = "DELETE FROM employee_working_detail WHERE classID='" + classID + "'";
@@ -126,7 +137,7 @@ public class EmployeeWorkDetailDA {
         return temp;
     }
 
-    public static int deleteOneRecord(String classID, String employeeID) throws ClassNotFoundException, SQLException {
+    public int deleteOneRecord(String classID, String employeeID) throws ClassNotFoundException, SQLException {
 
         con = DBConnection.getConnection();//retrieve connection
         String query = "DELETE FROM employee_working_detail WHERE employeeID='" + employeeID + "' and examID='" + classID + "'";

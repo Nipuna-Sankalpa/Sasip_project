@@ -22,8 +22,7 @@ import view.student.SearchStudent;
  *
  * @author Pubudu
  */
-public class StudentDetailController {//act as the controller that handles messages from the view layer to data access layer
-                                   //and vice versa.
+public class StudentDetailController {
     private Student studentModel;
     private AddStudent addView;
     private DeleteStudent deleteView;
@@ -46,11 +45,11 @@ public class StudentDetailController {//act as the controller that handles messa
         return result;
     }
     
-    public String updateId(String year) {
+    public String updateId() {
         String id = null;
 
         try {
-            id = studentData.updateId(year);
+            id = studentData.updateId();
         } catch (SQLException | ClassNotFoundException ex) {
             Logger.getLogger(StudentDetailController.class.getName()).log(Level.SEVERE, null, ex);
         }

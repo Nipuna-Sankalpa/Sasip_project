@@ -6,11 +6,12 @@
 package view.employee;
 
 import controller.employee.EmployeeController;
+import controller.employee.WorkingDetailsController;
 import datalayer.employee.EmployeeWorkDetailDA;
-import java.awt.Dimension;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 import model.employee.Employee;
@@ -20,25 +21,26 @@ import utilities.ComboBoxUtility;
  *
  * @author Mampitiya
  */
-public class ViewWorkingDetail extends javax.swing.JInternalFrame {//this interface is used to display the 
-                                                                    //working details of an employee
+public class ViewWorkingDetail extends javax.swing.JInternalFrame {
 
     private DefaultTableModel tableModel;
     private EmployeeController empController;
+    private WorkingDetailsController controller;
 
     /**
      * Creates new form ViewWorkingDetail
+     *
+     * @param employeeController
      */
-    public ViewWorkingDetail() {
+    public ViewWorkingDetail(EmployeeController employeeController, WorkingDetailsController controller) {
         String columns[] = {"Date", "Time", "Class ID"};
         tableModel = new DefaultTableModel(columns, 0);
         initComponents();
-        imageLbl.setPreferredSize(new Dimension(128, 128));
-        imageLbl.setMaximumSize(new Dimension(128, 128));
-        imageLbl.setMinimumSize(new Dimension(128, 128));
-        empController = new EmployeeController();
+        empController = employeeController;
+        this.controller = controller;
+
         try {
-            ComboBoxUtility.setComboItem(idCmbx, "Select employeeId from employee order by 1");
+            ComboBoxUtility.setComboItem(idCmbx, "Select employeeId from employee_working_detail group by 1");
             ComboBoxUtility.setComboItem(nameCmbx, "Select concat(firstName,' ', lastName) as name from employee");
         } catch (SQLException | ClassNotFoundException ex) {
         }
@@ -229,7 +231,6 @@ public class ViewWorkingDetail extends javax.swing.JInternalFrame {//this interf
         idCmbx.setSelectedIndex(0);
         nameCmbx.setSelectedIndex(0);
         ImageIcon imageIcon = new ImageIcon(getClass().getResource("/resources/employee_images/business_user.png"));
-
         imageLbl.setIcon(imageIcon);
         desiTxt.setText("");
         tableModel.setRowCount(0);
@@ -242,20 +243,21 @@ public class ViewWorkingDetail extends javax.swing.JInternalFrame {//this interf
             id = idCmbx.getSelectedItem().toString();
             if (!id.equals("No such employee..")) {
                 try {
-                    ResultSet rst = EmployeeWorkDetailDA.searchWorkingDetByID(id);
+                    ResultSet rst = controller.searchWorkingDetByID(id);
                     Employee employee = empController.searchEmployeeByID(id);
 
                     if (employee != null) {
                         nameCmbx.setSelectedItem(employee.getFirstName() + " " + employee.getLastName());
                         desiTxt.setText(employee.getDesignation());
-                        imageLbl.setIcon(employee.getImage());
                     }
-                    
-                    while (rst.next()) {
-                        String date = rst.getTime(1).toString();
-                        String time = rst.getTime(2).toString();
-                        String classID = rst.getString(3);
-                        tableModel.addRow(new String[]{date, time, classID});
+//                    imageLbl.setIcon(new ImageIcon(getClass().getResource(employee.getImagePath())));
+                    if (rst.first()) {
+                        do {
+                            String date = rst.getDate(1).toString();
+                            String time = rst.getTime(2).toString();
+                            String classID = rst.getString(3);
+                            tableModel.addRow(new String[]{date, time, classID});
+                        } while (rst.next());
                     }
                 } catch (SQLException | ClassNotFoundException ex) {
                 }
@@ -275,10 +277,9 @@ public class ViewWorkingDetail extends javax.swing.JInternalFrame {//this interf
                     if (employee != null) {
                         idCmbx.setSelectedItem(employee.getEmployeeID());
                         desiTxt.setText(employee.getDesignation());
-                        imageLbl.setIcon(employee.getImage());
                     }
-
-                    ResultSet rst = EmployeeWorkDetailDA.searchWorkingDetByName(name);
+//                    imageLbl.setIcon(new ImageIcon(getClass().getResource(employee.getImagePath())));
+                    ResultSet rst = controller.searchWorkingDetByName(name);
                     while (rst.next()) {
                         String date = rst.getDate(1).toString();
                         String time = rst.getTime(2).toString();

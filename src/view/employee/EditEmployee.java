@@ -6,7 +6,6 @@
 package view.employee;
 
 import controller.employee.EmployeeController;
-import java.awt.Dimension;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
@@ -23,23 +22,25 @@ import utilities.ComboBoxUtility;
  *
  * @author Mampitiya
  */
-public class EditEmployee extends javax.swing.JInternalFrame {//this interface is used to edit an emplloyee
+public class EditEmployee extends javax.swing.JInternalFrame {
+
     private EmployeeController empController;
     private String imagePath;
 
     /**
      * Creates new form EditEmployee
+     *
+     * @param employeeController
      */
-    public EditEmployee() {
+    public EditEmployee(EmployeeController employeeController) {
         initComponents();
-        imageLbl.setPreferredSize(new Dimension(128, 128));
-        imageLbl.setMaximumSize(new Dimension(128, 128));
-        imageLbl.setMinimumSize(new Dimension(128, 128));
-        empController = new EmployeeController();
+        empController = employeeController;
         try {
+
             ComboBoxUtility.setComboItem(idCmbx, "Select employeeId from employee order by 1");
             JTextField textField = (JTextField) idCmbx.getEditor().getEditorComponent();
             new ComboBoxUtility().setSearchableCombo(idCmbx, textField, "No such employee..");
+
         } catch (SQLException | ClassNotFoundException ex) {
         }
     }
@@ -148,11 +149,6 @@ public class EditEmployee extends javax.swing.JInternalFrame {//this interface i
         );
 
         idCmbx.setEditable(true);
-        idCmbx.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                idCmbxItemStateChanged(evt);
-            }
-        });
         idCmbx.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 idCmbxActionPerformed(evt);
@@ -353,8 +349,7 @@ public class EditEmployee extends javax.swing.JInternalFrame {//this interface i
                 JOptionPane.showMessageDialog(this, "Failed to Update! Check entered information again.");
             }
         } catch (SQLException | ClassNotFoundException | FileNotFoundException e) {
-            JOptionPane.showMessageDialog(this, "Unfortunately an error occurred! \nRefresh and try again.");
-            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Unfortunately an error occurred! \nRefresh and try again.");            
         }
     }//GEN-LAST:event_btnUpdateActionPerformed
 
@@ -410,60 +405,24 @@ public class EditEmployee extends javax.swing.JInternalFrame {//this interface i
     }//GEN-LAST:event_txtMobileCaretUpdate
 
     private void idCmbxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_idCmbxActionPerformed
-        idCmbx.getEditor().getEditorComponent().addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent evt) {
-                if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
-                    String id = "";
-                    if (idCmbx.getSelectedItem() != null) {
-                        id = idCmbx.getSelectedItem().toString();
-                    }
-                    if (!id.equals("No such employee..")) {
-                        try {
-                            Employee employee = empController.searchEmployeeByID(id);
-                            firstNameTxt.setText(employee.getFirstName());
-                            lastNameTxt.setText(employee.getLastName());
-                            txtAddress.setText(employee.getAddress());
-                            txtMobile.setText(employee.getMobile());
-                            accessLvlTxt.setText(employee.getAccessLevel() + "");
-                            cmbxDesignation.setSelectedItem(employee.getDesignation());
-                            imageLbl.setIcon(employee.getImage());
-                            btnUpdate.setEnabled(true);
-                        } catch (SQLException | ClassNotFoundException ex) {
-                        }
-                    }
-                }
+        String id = "";
+        if (idCmbx.getSelectedItem()!=null && !id.equals("No such employee..") && idCmbx.getSelectedIndex() != 0) {
+            try {
+                id = idCmbx.getSelectedItem().toString();
+                Employee employee = empController.searchEmployeeByID(id);
+                firstNameTxt.setText(employee.getFirstName());
+                lastNameTxt.setText(employee.getLastName());
+                txtAddress.setText(employee.getAddress());
+                txtMobile.setText(employee.getMobile());
+                accessLvlTxt.setText(employee.getAccessLevel() + "");
+                cmbxDesignation.setSelectedItem(employee.getDesignation());
+                imageLbl.setIcon(employee.getImage());
+                btnUpdate.setEnabled(true);
+            } catch (SQLException | ClassNotFoundException ex) {
             }
-        });
-    }//GEN-LAST:event_idCmbxActionPerformed
+        }
 
-    private void idCmbxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_idCmbxItemStateChanged
-        idCmbx.getEditor().getEditorComponent().addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent evt) {
-                if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
-                    String id = "";
-                    if (idCmbx.getSelectedItem() != null) {
-                        id = idCmbx.getSelectedItem().toString();
-                    }
-                    if (!id.equals("No such employee..")) {
-                        try {
-                            Employee employee = empController.searchEmployeeByID(id);
-                            firstNameTxt.setText(employee.getFirstName());
-                            lastNameTxt.setText(employee.getLastName());
-                            txtAddress.setText(employee.getAddress());
-                            txtMobile.setText(employee.getMobile());
-                            accessLvlTxt.setText(employee.getAccessLevel() + "");
-                            cmbxDesignation.setSelectedItem(employee.getDesignation());
-                            imageLbl.setIcon(employee.getImage());
-                            btnUpdate.setEnabled(true);
-                        } catch (SQLException | ClassNotFoundException ex) {
-                        }
-                    }
-                }
-            }
-        });
-    }//GEN-LAST:event_idCmbxItemStateChanged
+    }//GEN-LAST:event_idCmbxActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
