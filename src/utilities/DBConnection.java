@@ -20,7 +20,7 @@ public class DBConnection {
 
     public static Connection getConnection() throws ClassNotFoundException, SQLException {
         Class.forName("com.mysql.jdbc.Driver");
-        conn = DriverManager.getConnection("jdbc:mysql://http://www.db4free.net:3306/nipuna", userName, password);//Create DB Connection
+        conn = DriverManager.getConnection("jdbc:mysql://www.db4free.net:3306/nipuna", userName, password);//Create DB Connection
         System.out.println("");
         return conn;
     }
