@@ -6,12 +6,11 @@
 package view.employee;
 
 import controller.employee.EmployeeController;
-import controller.employee.WorkingDetailsController;
 import datalayer.employee.EmployeeWorkDetailDA;
+import java.awt.Dimension;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.swing.ImageIcon;
-import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 import model.employee.Employee;
@@ -21,26 +20,25 @@ import utilities.ComboBoxUtility;
  *
  * @author Mampitiya
  */
-public class ViewWorkingDetail extends javax.swing.JInternalFrame {
+public class ViewWorkingDetail extends javax.swing.JInternalFrame {//this interface is used to display the 
+                                                                    //working details of an employee
 
     private DefaultTableModel tableModel;
     private EmployeeController empController;
-    private WorkingDetailsController controller;
 
     /**
      * Creates new form ViewWorkingDetail
-     *
-     * @param employeeController
      */
-    public ViewWorkingDetail(EmployeeController employeeController, WorkingDetailsController controller) {
+    public ViewWorkingDetail() {
         String columns[] = {"Date", "Time", "Class ID"};
         tableModel = new DefaultTableModel(columns, 0);
         initComponents();
-        empController = employeeController;
-        this.controller = controller;
-
+        imageLbl1.setPreferredSize(new Dimension(128, 128));
+        imageLbl1.setMaximumSize(new Dimension(128, 128));
+        imageLbl1.setMinimumSize(new Dimension(128, 128));
+        empController = new EmployeeController();
         try {
-            ComboBoxUtility.setComboItem(idCmbx, "Select employeeId from employee_working_detail group by 1");
+            ComboBoxUtility.setComboItem(idCmbx, "Select employeeId from employee order by 1");
             ComboBoxUtility.setComboItem(nameCmbx, "Select concat(firstName,' ', lastName) as name from employee");
         } catch (SQLException | ClassNotFoundException ex) {
         }
@@ -71,7 +69,7 @@ public class ViewWorkingDetail extends javax.swing.JInternalFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         employeeDetailTable = new javax.swing.JTable();
         jPanel5 = new javax.swing.JPanel();
-        imageLbl = new javax.swing.JLabel();
+        imageLbl1 = new javax.swing.JLabel();
         nameCmbx = new javax.swing.JComboBox();
         clearBtn = new javax.swing.JButton();
 
@@ -123,8 +121,8 @@ public class ViewWorkingDetail extends javax.swing.JInternalFrame {
 
         jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder("Picture"));
 
-        imageLbl.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        imageLbl.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/employee_images/business_user.png"))); // NOI18N
+        imageLbl1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        imageLbl1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/employee_images/business_user.png"))); // NOI18N
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
@@ -132,14 +130,14 @@ public class ViewWorkingDetail extends javax.swing.JInternalFrame {
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
                 .addContainerGap(13, Short.MAX_VALUE)
-                .addComponent(imageLbl)
+                .addComponent(imageLbl1)
                 .addContainerGap())
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(imageLbl)
+                .addComponent(imageLbl1)
                 .addContainerGap())
         );
 
@@ -231,33 +229,34 @@ public class ViewWorkingDetail extends javax.swing.JInternalFrame {
         idCmbx.setSelectedIndex(0);
         nameCmbx.setSelectedIndex(0);
         ImageIcon imageIcon = new ImageIcon(getClass().getResource("/resources/employee_images/business_user.png"));
-        imageLbl.setIcon(imageIcon);
+
+        //imageLbl.setIcon(imageIcon);
         desiTxt.setText("");
         tableModel.setRowCount(0);
     }//GEN-LAST:event_clearBtnActionPerformed
 
     private void idCmbxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_idCmbxActionPerformed
+        EmployeeWorkDetailDA workDetail=EmployeeWorkDetailDA.getInstance();
         String id = "";
         tableModel.setRowCount(0);
         if (idCmbx.getSelectedItem() != null && idCmbx.getSelectedIndex() != 0) {
             id = idCmbx.getSelectedItem().toString();
             if (!id.equals("No such employee..")) {
                 try {
-                    ResultSet rst = controller.searchWorkingDetByID(id);
+                    ResultSet rst = workDetail.searchWorkingDetByID(id);
                     Employee employee = empController.searchEmployeeByID(id);
 
                     if (employee != null) {
                         nameCmbx.setSelectedItem(employee.getFirstName() + " " + employee.getLastName());
                         desiTxt.setText(employee.getDesignation());
+                        imageLbl1.setIcon(employee.getImage());
                     }
-//                    imageLbl.setIcon(new ImageIcon(getClass().getResource(employee.getImagePath())));
-                    if (rst.first()) {
-                        do {
-                            String date = rst.getDate(1).toString();
-                            String time = rst.getTime(2).toString();
-                            String classID = rst.getString(3);
-                            tableModel.addRow(new String[]{date, time, classID});
-                        } while (rst.next());
+                    
+                    while (rst.next()) {
+                        String date = rst.getTime(1).toString();
+                        String time = rst.getTime(2).toString();
+                        String classID = rst.getString(3);
+                        tableModel.addRow(new String[]{date, time, classID});
                     }
                 } catch (SQLException | ClassNotFoundException ex) {
                 }
@@ -266,6 +265,7 @@ public class ViewWorkingDetail extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_idCmbxActionPerformed
 
     private void nameCmbxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nameCmbxActionPerformed
+        EmployeeWorkDetailDA workDetail=EmployeeWorkDetailDA.getInstance();
         tableModel.setRowCount(0);
         String name = "";
         if (nameCmbx.getSelectedItem() != null && nameCmbx.getSelectedIndex() != 0) {
@@ -277,9 +277,10 @@ public class ViewWorkingDetail extends javax.swing.JInternalFrame {
                     if (employee != null) {
                         idCmbx.setSelectedItem(employee.getEmployeeID());
                         desiTxt.setText(employee.getDesignation());
+                        imageLbl1.setIcon(employee.getImage());
                     }
-//                    imageLbl.setIcon(new ImageIcon(getClass().getResource(employee.getImagePath())));
-                    ResultSet rst = controller.searchWorkingDetByName(name);
+
+                    ResultSet rst = workDetail.searchWorkingDetByName(name);
                     while (rst.next()) {
                         String date = rst.getDate(1).toString();
                         String time = rst.getTime(2).toString();
@@ -298,7 +299,7 @@ public class ViewWorkingDetail extends javax.swing.JInternalFrame {
     private javax.swing.JTextField desiTxt;
     private javax.swing.JTable employeeDetailTable;
     private javax.swing.JComboBox idCmbx;
-    private javax.swing.JLabel imageLbl;
+    private javax.swing.JLabel imageLbl1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

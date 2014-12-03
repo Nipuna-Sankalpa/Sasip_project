@@ -6,6 +6,7 @@
 package view.employee;
 
 import controller.employee.EmployeeController;
+import java.awt.Dimension;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.sql.SQLException;
@@ -19,18 +20,17 @@ import utilities.ComboBoxUtility;
  *
  * @author Mampitiya
  */
-public class DeleteEmployee extends javax.swing.JInternalFrame {
-
+public class DeleteEmployee extends javax.swing.JInternalFrame {//this interface is used to delete an emplloyee
     private EmployeeController empController;
-
     /**
      * Creates new form DeleteEmployeeForm
-     *
-     * @param employeeController
      */
-    public DeleteEmployee(EmployeeController employeeController) {
+    public DeleteEmployee() {
         initComponents();
-        empController = employeeController;
+        imageLbl.setPreferredSize(new Dimension(128, 128));
+        imageLbl.setMaximumSize(new Dimension(128, 128));
+        imageLbl.setMinimumSize(new Dimension(128, 128));
+        empController = new EmployeeController();
         try {
             ComboBoxUtility.setComboItem(idCmbx, "Select employeeId from employee order by 1");
             ComboBoxUtility.setComboItem(nameCmbx, "Select concat(firstName,' ', lastName) as name from employee");
@@ -89,10 +89,11 @@ public class DeleteEmployee extends javax.swing.JInternalFrame {
 
         idCmbx.setEditable(true);
         idCmbx.setModel(new javax.swing.DefaultComboBoxModel(new String[] { " " }));
+        idCmbx.setEnabled(false);
         idCmbx.setNextFocusableComponent(btnDelete);
-        idCmbx.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                idCmbxActionPerformed(evt);
+        idCmbx.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                idCmbxItemStateChanged(evt);
             }
         });
 
@@ -107,9 +108,9 @@ public class DeleteEmployee extends javax.swing.JInternalFrame {
         nameCmbx.setEditable(true);
         nameCmbx.setEnabled(false);
         nameCmbx.setNextFocusableComponent(btnDelete);
-        nameCmbx.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                nameCmbxActionPerformed(evt);
+        nameCmbx.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                nameCmbxItemStateChanged(evt);
             }
         });
 
@@ -299,6 +300,33 @@ public class DeleteEmployee extends javax.swing.JInternalFrame {
         }
     }//GEN-LAST:event_rbtnNameStateChanged
 
+    private void idCmbxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_idCmbxItemStateChanged
+        idCmbx.getEditor().getEditorComponent().addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent evt) {
+                if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+                    String id = "";
+                    if (idCmbx.getSelectedItem() != null) {
+                        id = idCmbx.getSelectedItem().toString();
+                    }
+                    if (!id.equals("No such employee..")) {
+                        try {
+                            Employee employee = empController.searchEmployeeByID(id);
+                            nameCmbx.setSelectedItem(employee.getFirstName() + " " + employee.getLastName());
+                            addressTxt.setText(employee.getAddress());
+                            mobileTxt.setText(employee.getMobile());
+                            accessLvlTxt.setText(employee.getAccessLevel() + "");
+                            desigTxt.setText(employee.getDesignation());
+                            imageLbl.setIcon(employee.getImage());
+                            btnDelete.setEnabled(true);
+                        } catch (SQLException | ClassNotFoundException ex) {
+                        }
+                    }
+                }
+            }
+        });
+    }//GEN-LAST:event_idCmbxItemStateChanged
+
     private void clrBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clrBtnActionPerformed
         idCmbx.setSelectedIndex(0);
         nameCmbx.setSelectedIndex(0);
@@ -318,7 +346,7 @@ public class DeleteEmployee extends javax.swing.JInternalFrame {
                     int rst = empController.deleteEmployee(id);
                     if (rst == 1) {
                         JOptionPane.showMessageDialog(this, "Successfully Deleted!");
-                        clrBtnActionPerformed(evt);
+                        clrBtnActionPerformed(evt); 
                         btnDelete.setEnabled(false);
                     } else {
                         JOptionPane.showMessageDialog(this, "Failed to delete!");
@@ -330,42 +358,34 @@ public class DeleteEmployee extends javax.swing.JInternalFrame {
         }
     }//GEN-LAST:event_btnDeleteActionPerformed
 
-    private void idCmbxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_idCmbxActionPerformed
-        String id = "";
-        if (idCmbx.getSelectedItem() != null && !id.equals("No such employee..") && idCmbx.getSelectedIndex() != 0) {
-            try {
-                id = idCmbx.getSelectedItem().toString();
-                Employee employee = empController.searchEmployeeByID(id);
-                nameCmbx.setSelectedItem(employee.getFirstName() + " " + employee.getLastName());
-                addressTxt.setText(employee.getAddress());
-                mobileTxt.setText(employee.getMobile());
-                accessLvlTxt.setText(employee.getAccessLevel() + "");
-                desigTxt.setText(employee.getDesignation());
-                imageLbl.setIcon(employee.getImage());
-                btnDelete.setEnabled(true);
-            } catch (SQLException | ClassNotFoundException ex) {
+    private void nameCmbxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_nameCmbxItemStateChanged
+        nameCmbx.getEditor().getEditorComponent().addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent evt) {
+                if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+                    String name = "";
+                    if (nameCmbx.getSelectedItem() != null) {
+                        name = nameCmbx.getSelectedItem().toString();
+                    }
+                    if (!name.equals("No such employee..")) {
+                        try {
+                            Employee employee = empController.searchEmployeeByName(name);                            
+                            idCmbx.setSelectedItem(employee.getEmployeeID());
+                            System.out.println(employee.getEmployeeID());
+                            addressTxt.setText(employee.getAddress());
+                            mobileTxt.setText(employee.getMobile());
+                            accessLvlTxt.setText(employee.getAccessLevel() + "");
+                            desigTxt.setText(employee.getDesignation());
+                            imageLbl.setIcon(employee.getImage());
+                            btnDelete.setEnabled(true);
+                        } catch (SQLException | ClassNotFoundException ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                }
             }
-        }
-    }//GEN-LAST:event_idCmbxActionPerformed
-
-    private void nameCmbxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nameCmbxActionPerformed
-        String name = "";
-        if (nameCmbx.getSelectedItem() != null && !name.equals("No such employee..") && nameCmbx.getSelectedIndex() != 0) {
-            try {
-                name = nameCmbx.getSelectedItem().toString();
-                Employee employee = empController.searchEmployeeByName(name);
-                idCmbx.setSelectedItem(employee.getEmployeeID());
-                System.out.println(employee.getEmployeeID());
-                addressTxt.setText(employee.getAddress());
-                mobileTxt.setText(employee.getMobile());
-                accessLvlTxt.setText(employee.getAccessLevel() + "");
-                desigTxt.setText(employee.getDesignation());
-                imageLbl.setIcon(employee.getImage());
-                btnDelete.setEnabled(true);
-            } catch (SQLException | ClassNotFoundException ex) {
-            }
-        }
-    }//GEN-LAST:event_nameCmbxActionPerformed
+        });
+    }//GEN-LAST:event_nameCmbxItemStateChanged
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

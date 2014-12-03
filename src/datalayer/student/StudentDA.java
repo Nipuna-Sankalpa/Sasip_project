@@ -144,7 +144,7 @@ public class StudentDA {
         return null;
     }
 
-    public static String updateId(String year) throws SQLException, ClassNotFoundException {
+    public String updateId(String year) throws SQLException, ClassNotFoundException {
         Connection con = DBConnection.getConnection();        
         ResultSet rst;
         String studentID=null;

@@ -72,45 +72,46 @@ public class LoginController {
                     int accessLevel;
                     char[] password, password1 = null;
                     userID = window.getUserTxtFld().getText();
-                    password = window.getPswrdField().getPassword();                   
-                    
+                    password = window.getPswrdField().getPassword();
+
                     try {
                         employee = new EmployeeDA().searchEmployeeByID(userID);
-                        
-                        if(employee != null){
-                        password1 = employee.getPassword().toCharArray();
-                        accessLevel = employee.getAccessLevel();
-                        if (Arrays.equals(password, password1)) {
-                            window.setVisible(false);
-                            MainGUI mainGUI = new MainGUI();
-                            mainGUI.setExtendedState(JFrame.MAXIMIZED_BOTH);
-                            mainGUI.setUserName(userID);
 
-                            AccessLevelManager alm = new AccessLevelManager(mainGUI);
+                        if (employee != null) {
+                            password1 = employee.getPassword().toCharArray();
+                            accessLevel = employee.getAccessLevel();
+                            if (Arrays.equals(password, password1)) {
+                                window.setVisible(false);
+                                MainGUI mainGUI = new MainGUI();
+                                mainGUI.setExtendedState(JFrame.MAXIMIZED_BOTH);
+                                mainGUI.setUserName(userID);
 
-                            switch (accessLevel) {
-                                case 2:
-                                    alm.cashierAccess();
-                                    break;
+                                AccessLevelManager alm = new AccessLevelManager(mainGUI);
 
-                                case 3:
-                                    alm.teamLeaderAccess();
-                                    break;
+                                switch (accessLevel) {
+                                    case 2:
+                                        alm.cashierAccess();
+                                        break;
 
-                                case 4:
-                                    alm.cardMarkerAccess();
-                                    break;
+                                    case 3:
+                                        alm.teamLeaderAccess();
+                                        break;
+
+                                    case 4:
+                                        alm.cardMarkerAccess();
+                                        break;
+                                }
+
+                                mainGUI.setVisible(true);
                             }
-
-                            mainGUI.setVisible(true);
-                        } 
-                        }else {
+                        } else {
                             JOptionPane.showMessageDialog(window, "Access Denide");
                         }
                     } catch (ClassNotFoundException | SQLException ex) {
                     }
                 }
             }
-        });
+        }
+        );
     }
 }

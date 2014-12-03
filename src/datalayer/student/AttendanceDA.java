@@ -22,25 +22,22 @@ import utilities.DBHandler;
  *
  * @author Mampitiya
  */
-public class AttendanceDA {
 
+public class AttendanceDA {
     private static AttendanceDA attendanceData;
     private Connection con;
-    private PreparedStatement statement;
-
-    private AttendanceDA() {
-    }
-
+    private  PreparedStatement statement;
+    
+    private AttendanceDA(){}
+    
     public static AttendanceDA getInstance() {
-        if (attendanceData == null) {
+        if(attendanceData == null)
             attendanceData = new AttendanceDA();
-        }
-
+        
         return attendanceData;
     }
 //if the commit failed throw an enter mark exception
-
-    public boolean addAttendance(AttendanceSheet sheet) throws SQLException, ClassNotFoundException, AddRecordException {
+    public  boolean addAttendance(AttendanceSheet sheet) throws SQLException, ClassNotFoundException, AddRecordException {
         con = DBConnection.getConnection();
         Iterator<Attendance> it = sheet.iterator();
         Attendance record;
@@ -82,7 +79,7 @@ public class AttendanceDA {
 //    
 //        at.addAttendance(sheet);
 //    }
-    public int updateAttendance(Attendance newEntry, Attendance oldEntry) throws ClassNotFoundException, SQLException {
+    public  int updateAttendance(Attendance newEntry, Attendance oldEntry) throws ClassNotFoundException, SQLException {
         con = DBConnection.getConnection();
         String query = "UPDATE attendance SET studentID=?,examID=?,date=?,time=?,employeeID=? WHERE studentID='" + oldEntry.getStudentId() + "' AND classID='" + oldEntry.getClassID() + "' AND date='" + oldEntry.getDate() + "' AND time='" + oldEntry.getTime() + "'";
         statement = con.prepareStatement(query);
@@ -99,7 +96,7 @@ public class AttendanceDA {
         return temp;
     }
 
-    public CachedRowSetImpl retrieveSingleStudentMarks(String studentID, String classID) throws ClassNotFoundException, SQLException {
+    public  CachedRowSetImpl retrieveSingleStudentMarks(String studentID, String classID) throws ClassNotFoundException, SQLException {
         CachedRowSetImpl rs = new CachedRowSetImpl();
         con = DBConnection.getConnection();
 

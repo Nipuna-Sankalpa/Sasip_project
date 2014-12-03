@@ -7,6 +7,8 @@
 package view.student;
 
 import controller.student.StudentDetailController;
+import datalayer.student.StudentDA;
+import java.awt.Dimension;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.swing.ImageIcon;
@@ -27,8 +29,29 @@ public class SearchStudent extends javax.swing.JInternalFrame {
     
     /**
      * Creates new form SearchStudent
-     * @param controller
      */
+    public SearchStudent() {
+        String columns[] = {"Class ID", "Year", "Category", "Day"};
+        tableModel = new DefaultTableModel(columns, 0);
+        initComponents();
+        imgLbl.setPreferredSize(new Dimension(128, 128));
+        imgLbl.setMaximumSize(new Dimension(128, 128));
+        imgLbl.setMinimumSize(new Dimension(128, 128));
+        controller = new StudentDetailController();
+        try {
+            ComboBoxUtility.setComboItem(idCmbx, "Select studentID from student order by 1");
+            ComboBoxUtility.setComboItem(nameCmbx, "Select concat(firstName,' ',lastName) as name from student");
+            
+            JTextField txt1 = (JTextField) idCmbx.getEditor().getEditorComponent();
+            new ComboBoxUtility().setSearchableCombo(idCmbx, txt1, "No such student");
+            
+            JTextField txt2 = (JTextField) nameCmbx.getEditor().getEditorComponent();
+            new ComboBoxUtility().setSearchableCombo(nameCmbx, txt2, "No such student");
+        } catch (SQLException | ClassNotFoundException ex) {
+            JOptionPane.showMessageDialog(this, "Database Error!"); 
+        }
+    }
+    
     public SearchStudent(StudentDetailController controller) {
         String columns[] = {"Class ID", "Year", "Category", "Day"};
         tableModel = new DefaultTableModel(columns, 0);
@@ -380,6 +403,7 @@ public class SearchStudent extends javax.swing.JInternalFrame {
                 gurdNameTxt.setText(student.getGuardianName());
                 guardPhnTxt.setText(student.getGuardianNumber());
                 nameCmbx.setSelectedItem(student.getFirstName() + " " + student.getLastName());
+                imgLbl.setIcon(student.getImage());
                 ResultSet rst = controller.getClassDetails(id);
                 while(rst.next()){
                     tableModel.addRow(new String[] {rst.getString(1), rst.getString(2), rst.getString(3), rst.getString(4)});
@@ -403,6 +427,7 @@ public class SearchStudent extends javax.swing.JInternalFrame {
                 gurdNameTxt.setText(student.getGuardianName());
                 guardPhnTxt.setText(student.getGuardianNumber());
                 guardPhnTxt.setText(student.getGuardianNumber());
+                imgLbl.setIcon(student.getImage());
                 idCmbx.setSelectedItem(student.getStudentID());
                 ResultSet rst = controller.getClassDetailsByName(nameCmbx.getSelectedItem().toString());
                 while(rst.next()){

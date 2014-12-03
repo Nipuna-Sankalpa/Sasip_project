@@ -6,11 +6,12 @@
 package view.student;
 
 import controller.student.StudentDetailController;
+import datalayer.student.StudentDA;
+import java.awt.Dimension;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
-import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 import model.student.Student;
 import utilities.ComboBoxUtility;
@@ -22,12 +23,28 @@ import utilities.ComboBoxUtility;
 public class DeleteStudent extends javax.swing.JInternalFrame {
 
     private DefaultTableModel tableModel;
-    private final StudentDetailController controller;
+    private StudentDetailController controller;
 
     /**
      * Creates new form DeleteStudent
-     * @param controller
      */
+    public DeleteStudent() {
+        String columns[] = {"Class ID", "Year", "Category", "Day"};
+        tableModel = new DefaultTableModel(columns, 0);
+        initComponents();
+        imgLbl.setPreferredSize(new Dimension(128, 128));
+        imgLbl.setMaximumSize(new Dimension(128, 128));
+        imgLbl.setMinimumSize(new Dimension(128, 128));
+        controller = new StudentDetailController();
+        try {
+            ComboBoxUtility.setComboItem(idCmbx, "Select studentID from student order by 1");
+            ComboBoxUtility.setComboItem(nameCmbx, "Select concat(firstName,' ',lastName) as name from student");
+        } catch (SQLException | ClassNotFoundException ex) {
+            JOptionPane.showMessageDialog(this, "Database Error!");
+            ex.printStackTrace();
+        }
+    }
+    
     public DeleteStudent(StudentDetailController controller) {
         String columns[] = {"Class ID", "Year", "Category", "Day"};
         tableModel = new DefaultTableModel(columns, 0);
@@ -35,16 +52,11 @@ public class DeleteStudent extends javax.swing.JInternalFrame {
         try {
             ComboBoxUtility.setComboItem(idCmbx, "Select studentID from student order by 1");
             ComboBoxUtility.setComboItem(nameCmbx, "Select concat(firstName,' ',lastName) as name from student");
-            
-            JTextField txt1 = (JTextField) idCmbx.getEditor().getEditorComponent();
-            new ComboBoxUtility().setSearchableCombo(idCmbx, txt1, "No such student");
-            
-            JTextField txt2 = (JTextField) nameCmbx.getEditor().getEditorComponent();
-            new ComboBoxUtility().setSearchableCombo(nameCmbx, txt2, "No such student");
-            
         } catch (SQLException | ClassNotFoundException ex) {
             JOptionPane.showMessageDialog(this, "Database Error!");
-        }        
+            ex.printStackTrace();
+        }
+        
         this.controller = controller;
     }
 
@@ -369,6 +381,7 @@ public class DeleteStudent extends javax.swing.JInternalFrame {
                 genderTxt.setText(student.isMale() ? "Male" : "Female");
                 gurdNameTxt.setText(student.getGuardianName());
                 guardPhnTxt.setText(student.getGuardianNumber());
+                imgLbl.setIcon(student.getImage());
                 nameCmbx.setSelectedItem(student.getFirstName() + " " + student.getLastName());
                 ResultSet rst = controller.getClassDetails(id);
                 while (rst.next()) {
@@ -400,6 +413,7 @@ public class DeleteStudent extends javax.swing.JInternalFrame {
                 gurdNameTxt.setText(student.getGuardianName());
                 guardPhnTxt.setText(student.getGuardianNumber());
                 guardPhnTxt.setText(student.getGuardianNumber());
+                imgLbl.setIcon(student.getImage());
                 idCmbx.setSelectedItem(student.getStudentID());
                 ResultSet rst = controller.getClassDetailsByName(nameCmbx.getSelectedItem().toString());
                 while (rst.next()) {

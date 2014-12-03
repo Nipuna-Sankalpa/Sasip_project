@@ -14,13 +14,14 @@ import java.sql.SQLException;
  */
 public class DBConnection {
 
-    private static String userName = "root";
+    private static String userName = "nipunasankalpa";
     private static String password = "0713899213";
     private static Connection conn;
 
     public static Connection getConnection() throws ClassNotFoundException, SQLException {
         Class.forName("com.mysql.jdbc.Driver");
-        conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/mis", userName, password);//Create DB Connection
+        conn = DriverManager.getConnection("jdbc:mysql://http://www.db4free.net:3306/nipuna", userName, password);//Create DB Connection
+        System.out.println("");
         return conn;
     }
 }

@@ -22,19 +22,19 @@ import utilities.DBHandler;
  */
 public class EmployeeWorkDetailDA {
 
-    private Connection con;
-    private PreparedStatement statement;
+    private static Connection con;
+    private static PreparedStatement statement;
 //if the commit failed,throw an enter mark exception
-    private static EmployeeWorkDetailDA empDtl = null;
+    public static EmployeeWorkDetailDA workDetail;
 
     private EmployeeWorkDetailDA() {
     }
 
     public static EmployeeWorkDetailDA getInstance() {
-        if (empDtl == null) {
-            empDtl = new EmployeeWorkDetailDA();
+        if (workDetail == null) {
+            workDetail = new EmployeeWorkDetailDA();
         }
-        return empDtl;
+        return workDetail;
     }
 
     public int addPayments(EmployeeWorkSheet sheet) throws SQLException, ClassNotFoundException, AddRecordException {//add Payments
